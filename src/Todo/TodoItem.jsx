@@ -1,94 +1,89 @@
 import { useDispatch, useSelector } from "react-redux"
-import { tododelete, todotoggle } from "../Redux/action";
+import { getTodofailure, getTodorequest, getTodosuccess, tododelete, todotoggle } from "../Redux/action";
 import React, { useState } from "react";
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import Modal from '@mui/material/Modal';
 import "./module.css"
+import { useEffect } from "react";
 
-const style = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
-    p: 4,
-  };
-const TodoItem = () => {
-    const [open, setOpen] = useState(false);
-    const [ids,setId] = useState("");
-    const [Status,setStatus]  = useState(false);
-  const [newstatus , setNewStatus] = useState(false);
 
-    const todos = useSelector((state) => state.todos);
+function deleteTodo(id){
+    return fetch(`https://pratice-heroku-server.herokuapp.com/posts/${id}` , {
+        method:"DELETE",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    })
+    .then(res=>res.json()) 
+}
 
-    const dispatch = useDispatch();
+function toggleChange(id,payloads){
     
+    return fetch(`https://pratice-heroku-server.herokuapp.com/posts/${id}` , {
+        method:"PATCH",
+        body : JSON.stringify({status:payloads}),    
+        headers: {
+            "Content-Type": "application/json"
+        }
+    })
+    .then(res=>res.json())
+}
+
+const TodoItem = () => {
+    const { todos ,isLoading , isError} = useSelector((state) => state.todos);
+    // console.log(todos,"todod");
+    const dispatch = useDispatch();
+
+    const getTodo = () => {
+        const requestAction = getTodorequest();
+        dispatch(requestAction);
+        return fetch('https://pratice-heroku-server.herokuapp.com/posts')
+        .then((res) => res.json())
+        .then((res) => {
+        
+          const successAction = getTodosuccess(res);
+          dispatch(successAction);
+      
+        })
+        .catch((err) => {
+         const failureAction = getTodofailure();
+         dispatch(failureAction);
+        })
+      }
+    useEffect(() => {
+     getTodo()
+    })
+
     const handleDelete = (id) => {
-        const action = tododelete(id);
-        dispatch(action);
+         
+        deleteTodo(id);
+        getTodo()
     }
-    const handleToggle = (id) => {
-        const action = todotoggle(id);
-        dispatch(action);
-    }
-    const handleEditToggle = () => {
-      const id = ids;
-        if( Status == newstatus){
-        }
-        else{
-            const action = todotoggle(id);
-            dispatch(action)
-        }
-        setOpen(false)
-    }
-    const handleNewStatus = () => {
-         if(newstatus == true){
-           setNewStatus(false);
+    const handleToggle = (id,status) => {
+        var payloads;
+       if(status == true){
+            payloads = false
        }
-       else {
-           setNewStatus(true);
+       else{
+            payloads = true;
        }
-    }   
-    const handleEdit = (id,status) => {
-        setOpen(true);
-        setId(id,status);
-       setStatus(status)
+        toggleChange(id,payloads);
+        getTodo()
     }
+    
     return(
         <div>
-               <Modal
-                    open={open}
-                    // onClose={handleClose}
-                    aria-labelledby="modal-modal-title"
-                    aria-describedby="modal-modal-description"
-                  >
-                    <Box sx={style}>
-                      <Typography id="modal-modal-title" variant="h6" component="h2">
-                        Text in a modal
-                      </Typography>
-                      <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                          {newstatus ? "true" : "false"}<br /><br />
-                      <button onClick={() => handleNewStatus()}>Toggle</button>
-                   <button onClick={() => handleEditToggle()}>close</button>
-                      </Typography>
-                    </Box>
-                  </Modal> 
-
+           {isLoading && <h3>Loading...</h3>}
+           {isError && <h3>Error...</h3>}
             {todos.map((item) => (
     
                 <div key={item.id} className="todoList" >
                    {item.title} - {item.status ? "true" : "false"}
-                   <button onClick={() => handleEdit(item.id,item.status)}>Edit
-                   </button>
-                    <button onClick={() => handleToggle(item.id)}>Toggle</button>
+                   
+                    <button onClick={() => handleToggle(item.id,item.status)}>Toggle</button>
                      <button onClick={ () => handleDelete(item.id)}>Delete</button>
                 </div>
             ))}
+
+
         </div>
     )
 }
