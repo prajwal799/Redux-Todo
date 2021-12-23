@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import {v4 as uuid} from "uuid";
-import { todoadd } from "../Redux/action";
+import {todoadd} from "../Redux/app/action"
 
 const TodoInput = () => {
     const [title,setTitle] = useState("");
@@ -16,8 +16,7 @@ const TodoInput = () => {
                    "Content-Type": "application/json"
                }
            })
-           .then(res=>res.json())
-       
+           .then(res=>res.json())   
    }
 
     const handleAdd = () => {

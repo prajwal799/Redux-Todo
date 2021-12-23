@@ -1,8 +1,9 @@
 import { useDispatch, useSelector } from "react-redux"
-import { getTodofailure, getTodorequest, getTodosuccess, tododelete, todotoggle } from "../Redux/action";
+import { getTodofailure, getTodorequest, getTodosuccess, tododelete, todotoggle } from "../Redux/app/action";
 import React, { useState } from "react";
 import "./module.css"
 import { useEffect } from "react";
+import { Link } from "react-router-dom";
 
 
 function deleteTodo(id){
@@ -28,17 +29,15 @@ function toggleChange(id,payloads){
 }
 
 const TodoItem = () => {
-    const { todos ,isLoading , isError} = useSelector((state) => state.todos);
-    // console.log(todos,"todod");
-    const dispatch = useDispatch();
-
+    const [total , seTotal] = useState(0);
+    const { todos ,isLoading , isError} = useSelector((state) => state.app.todos);
+    const isLogin = useSelector((state) => state.auth.isLogin);
     const getTodo = () => {
         const requestAction = getTodorequest();
         dispatch(requestAction);
         return fetch('https://pratice-heroku-server.herokuapp.com/posts')
         .then((res) => res.json())
         .then((res) => {
-        
           const successAction = getTodosuccess(res);
           dispatch(successAction);
       
@@ -48,9 +47,13 @@ const TodoItem = () => {
          dispatch(failureAction);
         })
       }
+
+    // console.log(todos,"todod");
+    const dispatch = useDispatch();
+
     useEffect(() => {
      getTodo()
-    })
+    },[])
 
     const handleDelete = (id) => {
          
@@ -69,22 +72,24 @@ const TodoItem = () => {
         getTodo()
     }
     
-    return(
-        <div>
-           {isLoading && <h3>Loading...</h3>}
-           {isError && <h3>Error...</h3>}
-            {todos.map((item) => (
+    // console.log(todos,"todos")
+    return  ( <div>
+        {isLoading && <h3>Loading...</h3>}
+        {isError && <h3>Error...</h3>}
+       
+         {todos.map((item) => (
+             <div key={item.id} className="todoList" >
+                {item.title} - {item.status ? "Complete" : "Not Complete"}
+                  <button onClick={() => handleToggle(item.id,item.status)}>Toggle</button>
+                  <button onClick={ () => handleDelete(item.id)}>Delete</button>
+                  
+             </div>
+         ))}
+
+
+     </div>) 
     
-                <div key={item.id} className="todoList" >
-                   {item.title} - {item.status ? "true" : "false"}
-                   
-                    <button onClick={() => handleToggle(item.id,item.status)}>Toggle</button>
-                     <button onClick={ () => handleDelete(item.id)}>Delete</button>
-                </div>
-            ))}
-
-
-        </div>
-    )
+    
+    
 }
 export default TodoItem;

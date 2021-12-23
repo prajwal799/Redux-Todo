@@ -1,8 +1,0 @@
-export const TODO_ADD = "TODO_ADD";
-export const TODO_DELETE = "TODO_DELETE";
-export const TODO_TOGGLE = "TODO_TOGGLE";
-export const GET_TODOS_REQUEST = "GET_TODOS_REQUEST";
-export const GET_TODOS_SUCCESS = "GET_TODOS_SUCCESS";
-export const GET_TODOS_FAILURE = "GET_TODOS_FAILURE";
-export const ADD_COUNTER = "ADD_COUNTER";
-export const REDUCE_COUNTER = "REDUCE_COUNTER";
