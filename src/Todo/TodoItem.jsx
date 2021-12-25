@@ -52,11 +52,10 @@ const TodoItem = () => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-     getTodo()
+     getTodo(dispatch)
     },[])
 
-    const handleDelete = (id) => {
-         
+    const handleDelete = (id) => {  
         deleteTodo(id);
         getTodo()
     }
@@ -77,14 +76,14 @@ const TodoItem = () => {
         {isLoading && <h3>Loading...</h3>}
         {isError && <h3>Error...</h3>}
        
-         {todos.map((item) => (
+         {/* {todos.map((item) => (
              <div key={item.id} className="todoList" >
                 {item.title} - {item.status ? "Complete" : "Not Complete"}
                   <button onClick={() => handleToggle(item.id,item.status)}>Toggle</button>
                   <button onClick={ () => handleDelete(item.id)}>Delete</button>
                   
              </div>
-         ))}
+         ))} */}
 
 
      </div>) 

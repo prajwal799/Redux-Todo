@@ -13,8 +13,18 @@ const loggerMiddleware = (store) => (next) => (action) => {
     console.log(store.getState());
 }
 
+const networkRequestsMiddleware = (store) => (next) => (action) => {
+    if (typeof action === "function") {
+      console.log("found an action which is a function");
+      const func = action;
+      return func(store.dispatch, store.getState);
+    } else {
+      return next(action);
+    }
+  };
+
 export const store = createStore(rootReducer ,
-    window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
-    //  applyMiddleware(loggerMiddleware)
+    // window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
+     applyMiddleware(networkRequestsMiddleware)
     )
 console.log(store.getState());

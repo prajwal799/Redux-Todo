@@ -4,7 +4,7 @@ import { Link, Route , Routes  } from "react-router-dom";
 import Counter from "../component/counter";
 import Login from "../component/Login";
 import Showmore from "../component/Showmore";
-import Todo from "../Todo/Todo";
+import Todo from "../Todo1/Todo";
 
 function AllRoute(){
     return(

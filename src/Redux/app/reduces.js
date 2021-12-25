@@ -44,7 +44,7 @@ const appReducer = (state = initState , {type,payload}) => {
                 case appConstants.GET_TODOS_SUCCESS:{
                     return{
                         ...state,
-                        todos: payload,
+                        todos: payload.todos,
                         isLoading:false
                         
                     }      
@@ -57,17 +57,45 @@ const appReducer = (state = initState , {type,payload}) => {
                     }
                 }
                 case appConstants.TODO_DELETE:
-                       console.log(payload,"sddf");
+                       
                        return{
                            ...state,
-                           todos:payload
+                           todos:state.todos.filter((item) => item.id != payload.id )
                         
                 }
                 case appConstants.TODO_TOGGLE:
                            return{
                                ...state,
-                               todos:payload
+                               todos: state.todos.map((item) =>
+                               item.id === payload.id
+                                 ? { ...item, status: !item.status }
+                                 : item
+                             )
                 }
+                case appConstants.ADD_TODO_REQUEST: {
+                    return {
+                      ...state,
+                      isLoading: true,
+                      isError: false
+                    };
+                  }
+                  case appConstants.ADD_TODO_SUCCESS: {
+                    return {
+                      ...state,
+                      isLoading: false
+                    };
+                  }
+                  case appConstants.ADD_TODO_FAILURE: {
+                    return {
+                      ...state,
+                      isLoading: false,
+                      isError: true
+                    };
+                  }
+              
+                  case appConstants.ADD_TODO: {
+                    return { ...state, todos: [...state.todos, payload] };
+                  }
                default:
                 return state
            }
